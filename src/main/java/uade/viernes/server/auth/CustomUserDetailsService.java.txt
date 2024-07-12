@@ -1,0 +1,35 @@
+package uade.viernes.server.auth;
+
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import uade.viernes.server.usuario.Rol;
+import uade.viernes.server.usuario.Usuario;
+import uade.viernes.server.usuario.UsuarioRepository;
+
+@Service
+@RequiredArgsConstructor
+public class CustomUserDetailsService implements UserDetailsService {
+    private final UsuarioRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("(details) Buscando " + username);
+        Usuario user = userRepository.findByCorreo(username);
+        System.out.println("(details) Encontrado" + user);
+
+        UserDetails details = User.builder()
+                .username(user.getCorreo())
+                .password(user.getContraseña())
+                .roles(Rol.Proveedor.name())
+                .build();
+
+        System.out.println("(details) Creado " + details.getAuthorities());
+        return details;
+    }
+}
+
