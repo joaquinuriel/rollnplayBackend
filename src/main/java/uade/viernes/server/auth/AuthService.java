@@ -31,8 +31,9 @@ public class AuthService {
 
     public Optional<Usuario> getUsuarioActual() {
         Authentication auth = getAuth();
-        Usuario usuario = (Usuario) auth.getPrincipal();
-        String username = usuario.getUsername();
+        // Usuario usuario = (Usuario) auth.getPrincipal();
+        // String username = usuario.getUsername();
+        String username = (String) auth.getPrincipal();
         System.out.println("Username actual " + username);
         return usuarioService.buscarPorCorreo(username);
     }

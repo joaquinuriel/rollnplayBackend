@@ -33,6 +33,7 @@ public class CompraService {
         List<Producto> productos = new ArrayList<>();
         Carrito carrito = itemsCarrito.get(0).getCarrito();
         Usuario comprador = carrito.getUsuario();
+        double total = 0;
 
         // Restar stock de productos
         for (Item item : itemsCarrito) {
@@ -42,12 +43,13 @@ public class CompraService {
             if (producto.getStock() >= cantidadComprada) {
                 producto.setStock(producto.getStock() - cantidadComprada);   
                 productos.add(producto);
+                total = total + producto.getPrecio();
             } else {
                 throw new RuntimeException("No hay suficiente stock para el producto " + producto.getNombre());
             }
         }
 
-        Compra compra = new Compra(comprador, itemsCarrito);
+        Compra compra = new Compra(comprador, itemsCarrito, total);
 
         for (Item item : itemsCarrito) {
             item.setCarrito(null);

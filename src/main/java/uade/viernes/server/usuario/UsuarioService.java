@@ -14,13 +14,11 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    // @Autowired
-    // private CarritoRepository carritoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder; // Spring Security's PasswordEncoder for hashing passwords
-    
+
     public Usuario registrarUsuario(Usuario usuario) {
-        // Lógica para validar y guardar usuario
+        // Lógica para validar y guardar adminOpcional
         System.out.println("Registrar usuario: " + usuario.getCorreo() + " " + usuario.getContraseña());
         System.out.println(usuarioRepository.findByCorreo(usuario.getCorreo()));
 
@@ -28,17 +26,17 @@ public class UsuarioService {
             throw new RuntimeException("El usuario ya existe");
         }
 
-        Carrito carrito = new Carrito(usuario); 
+        Carrito carrito = new Carrito(usuario);
         // carritoRepository.save(carrito); // antes de asignar
-        
+
         usuario.setCarrito(carrito);
         usuario.setContraseña(passwordEncoder.encode(usuario.getContraseña())); // Hash de la contraseña
 
         return usuarioRepository.save(usuario);
     }
-    
+
     public Usuario autenticarUsuario(Usuario usuario) {
-        // Lógica para autenticar usuario
+        // Lógica para autenticar adminOpcional
         Optional<Usuario> opcional = usuarioRepository.findByCorreo(usuario.getCorreo());
         if (opcional.isPresent()) {
             Usuario encontrado = opcional.get();
@@ -51,8 +49,11 @@ public class UsuarioService {
             throw new RuntimeException("Usuario no encontrado");
         }
     }
-    
+
     // Otros métodos de gestión de usuarios
+    public Optional<Usuario> buscarPorId(Long id) {
+        return usuarioRepository.findById(id);
+    }
 
     public Optional<Usuario> buscarPorCorreo(String correo) {
         return usuarioRepository.findByCorreo(correo);
@@ -66,12 +67,27 @@ public class UsuarioService {
         Optional<Usuario> opcional = usuarioRepository.findById(usuario.getId());
         if (opcional.isPresent()) {
             Usuario encontrado = opcional.get();
-            if (!usuario.getNombre().isEmpty()) encontrado.setNombre(usuario.getNombre());
-            if (!usuario.getApellido().isEmpty()) encontrado.setApellido(usuario.getApellido());
+            if (!usuario.getNombre().isEmpty()) {
+                encontrado.setNombre(usuario.getNombre());
+            }
+            if (!usuario.getApellido().isEmpty()) {
+                encontrado.setApellido(usuario.getApellido());
+            }
             usuarioRepository.save(encontrado);
             return encontrado;
         } else {
             throw new RuntimeException("Usuario no encontrado");
         }
+    }
+
+    public Usuario promoverUsuario(Long id) {
+        Optional<Usuario> usuarioOpcional = buscarPorId(id);
+        if (usuarioOpcional.isEmpty()) {
+            throw new RuntimeException("No encontrado");
+        }
+        Usuario usuario = usuarioOpcional.get();
+        usuario.setRol(Rol.SELLER);
+        usuarioRepository.save(usuario);
+        return usuario;
     }
 }

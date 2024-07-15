@@ -30,9 +30,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
-    @Autowired 
+    @Autowired
     private CategoriaRepository categoriaRepository;
-    @Autowired 
+    @Autowired
     private UsuarioService usuarioService;
 
     @GetMapping("/categorias")
@@ -48,9 +48,18 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos() {    
+    public ResponseEntity<List<Producto>> listarProductos(
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Long precioMaximo
+    ) {
         try {
             List<Producto> productos = productoService.obtenerProductos();
+            productos.removeIf(producto -> {
+                if (categoriaId != null && !producto.getCategoria().getId().equals(categoriaId)) {
+                    return true;
+                }
+                return precioMaximo != 0 && producto.getPrecio() > precioMaximo;
+            });
             return new ResponseEntity<>(productos, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

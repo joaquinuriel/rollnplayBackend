@@ -19,6 +19,8 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private double total;
+
     @ManyToOne
     @JoinColumn(name = "comprador_id")
     private Usuario comprador;
@@ -29,9 +31,10 @@ public class Compra {
     public Compra() {
     }
 
-    public Compra(Usuario comprador, List<Item> items) {
+    public Compra(Usuario comprador, List<Item> items, double total) {
         this.comprador = comprador;
         this.items = items;
+        this.total = total;
     }
 
     public Compra(Usuario comprador) {
@@ -52,5 +55,13 @@ public class Compra {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double  total) {
+        this.total = total;
     }
 }
